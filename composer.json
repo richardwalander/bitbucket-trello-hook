@@ -1,0 +1,19 @@
+{
+    "name": "ricwa230/bitbucket-trello-hook",
+    "description": "Bitbucket web hooks handler for Trello written in php",
+    "require": {
+        "slim/slim": "dev-master",
+        "guzzlehttp/guzzle": "dev-master"
+    },
+    "license": "GLP v2",
+    "authors": [
+        {
+            "name": "Richard Walander",
+            "email": "richard.walander@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {"BitbucketTrelloHook\\": "src/"}
+    }
+}

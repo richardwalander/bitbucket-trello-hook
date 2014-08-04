@@ -1,0 +1,5 @@
+/node_modules/
+/vendor/
+config.json
+Gruntfile.js
+package.json
