@@ -45,12 +45,12 @@ $app->post('/webhook/:boardId', function ($boardId) use ($app) {
 			} else if (!empty($cardIds)) {
 				$client->addComment();
 			} else {
-				# code...
+				$app->halt(400, 'No action and no cardId found');
 			}
 			
 		}
 	} else {
-		$app->halt('400');
+		$app->halt(400, 'No commit payload recieved');
 	}
 });
 
