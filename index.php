@@ -28,9 +28,9 @@ $app->get('/', function () {
 });
 
 $app->post('/webhook/:boardId', function ($boardId) use ($app) {
-	// $date = date('Y-m-d-His');
-	// file_put_contents("posts/post-$date.txt", json_encode($app->request->post('payload')));
+	
 	$payload = json_decode($app->request->post('payload'));
+
 	if ($payload != null) {
 		$bitbucketurl = $payload->canon_url.$payload->repository->absolute_url.'commits/';
 		foreach ($payload->commits as $commit) {
@@ -38,7 +38,7 @@ $app->post('/webhook/:boardId', function ($boardId) use ($app) {
 			$isdone = $parser->isDone();
 			$cardIds = $parser->getCardIds();
 			$client = new \BitbucketTrelloHook\Client($boardId, $cardIds, $commit, $app, $bitbucketurl);
-			
+
 			if($isdone && !empty($cardIds)) {
 				$client->moveCards();
 				$client->addComment();

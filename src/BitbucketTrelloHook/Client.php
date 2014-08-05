@@ -24,15 +24,28 @@ class Client
 		$this->bitbucketurl = $bitbucketurl;
 	}
 
-	private function signURL($url)
+	private function buildURL($url)
 	{
-		$url .= (count(explode('?', $url)) >= 2 ? "&token=".$this->app->config('token')."&key=".$this->app->config('key') : "?token=".$this->app->config('token')."&key=".$this->app->config('key')); 
+		$url = $this->baseurl.$url;
+		foreach ($this->app->config('users') as $user) {
+			if ($user['alias'] == $this->commit->author) {
+				$this->user = $user;
+			}
+		}
+		if (isset($this->user)) {
+			$url .= (count(explode('?', $url)) >= 2 
+				? "&token=".$this->user['token']."&key=".$this->user['key'] 
+				: "?token=".$this->user['token']."&key=".$this->user['key']); 
+		} else {
+			$this->app->halt(400, 'No valid user found in config');
+		}
+		
 		return $url;
 	}
 
 	public function moveCards()
 	{
-		$response = $this->client->get($this->signURL($this->baseurl.'/boards/'.$this->boardId.'/lists'));
+		$response = $this->client->get($this->buildURL('/boards/'.$this->boardId.'/lists'));
 		$lists = $response->json();
 		foreach ($lists as $list) {
 			if ($list['name'] == $this->app->config('list')) {
@@ -43,7 +56,7 @@ class Client
 		if (!empty($this->listId)) {
 			$requests = [];
 			foreach ($this->cardIds as $cardId) {
-				$response = $this->client->put($this->signURL($this->baseurl.'/cards/'.$cardId.'/idList?value='.$this->listId));
+				$response = $this->client->put($this->buildURL('/cards/'.$cardId.'/idList?value='.$this->listId));
 				echo $response;
 			}
 		} else {
@@ -55,7 +68,7 @@ class Client
 	{
 		foreach ($this->cardIds as $cardId) {
 			$msg = $this->app->config('emoji').' ['.$this->commit->node.']('.$this->bitbucketurl.$this->commit->node.') '.$this->commit->message;
-			$response = $this->client->post($this->signURL($this->baseurl.'/cards/'.$cardId.'/actions/comments'), [
+			$response = $this->client->post($this->buildURL('/cards/'.$cardId.'/actions/comments'), [
 				'body' => [
 					'text' => $msg
 				]
