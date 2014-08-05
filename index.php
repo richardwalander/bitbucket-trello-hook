@@ -37,9 +37,9 @@ $app->post('/webhook/:boardId', function ($boardId) use ($app) {
 			$parser = new \BitbucketTrelloHook\Parser($commit->message);
 			$isdone = $parser->isDone();
 			$cardIds = $parser->getCardIds();
-
+			$client = new \BitbucketTrelloHook\Client($boardId, $cardIds, $commit, $app, $bitbucketurl);
+			
 			if($isdone && !empty($cardIds)) {
-				$client = new \BitbucketTrelloHook\Client($boardId, $cardIds, $commit, $app, $bitbucketurl);
 				$client->moveCards();
 				$client->addComment();
 			} else if (!empty($cardIds)) {
